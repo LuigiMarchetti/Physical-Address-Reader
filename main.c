@@ -5,7 +5,7 @@
 #define SECTOR_SIZE 512
 #define BYTES_PER_LINE 8
 
-// Window controls IDs
+// IDs para controle da interface
 #define ID_SECTOR_INPUT 2
 #define ID_READ_SECTOR 3
 #define ID_BUTTON_PREV 4
@@ -15,7 +15,7 @@
 #define ID_TOOLTIP_PREV 1002
 
 
-// Function declarations
+// Declaração das funções
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 void ReadAndDisplaySector(HWND hList, LONGLONG sectorNumber);
@@ -43,7 +43,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     ShowWindow(hwnd, nCmdShow);
 
     MSG msg = {0};
-    // "Event listener" of application
+    // "Event listener" da aplicação
     while (GetMessage(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
@@ -58,97 +58,97 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
     switch (uMsg) {
         case WM_CREATE: {
-    InitCommonControls();
+            InitCommonControls();
 
-    // Criação dos botões e outros controles
-    hDriveInfo = CreateWindow("STATIC", "Drive C",
-                              WS_VISIBLE | WS_CHILD,
-                              10, 10, 300, 20, hwnd, NULL, NULL, NULL);
+            // Criação dos botões e outros controles
+            hDriveInfo = CreateWindow("STATIC", "Drive C",
+                                      WS_VISIBLE | WS_CHILD,
+                                      10, 10, 300, 20, hwnd, NULL, NULL, NULL);
 
-    CreateWindow("STATIC", "Sector Number:",
-                 WS_VISIBLE | WS_CHILD,
-                 10, 40, 100, 20, hwnd, NULL, NULL, NULL);
+            CreateWindow("STATIC", "Sector Number:",
+                         WS_VISIBLE | WS_CHILD,
+                         10, 40, 100, 20, hwnd, NULL, NULL, NULL);
 
-    hSectorInput = CreateWindow("EDIT", "",
-                                WS_VISIBLE | WS_CHILD | WS_BORDER | ES_NUMBER,
-                                120, 40, 150, 20, hwnd, (HMENU)ID_SECTOR_INPUT, NULL, NULL);
+            hSectorInput = CreateWindow("EDIT", "",
+                                        WS_VISIBLE | WS_CHILD | WS_BORDER | ES_NUMBER,
+                                        120, 40, 150, 20, hwnd, (HMENU)ID_SECTOR_INPUT, NULL, NULL);
 
-    hButton = CreateWindow("BUTTON", "Read Sector",
-                           WS_VISIBLE | WS_CHILD,
-                           280, 40, 100, 30, hwnd, (HMENU)ID_READ_SECTOR, NULL, NULL);
+            hButton = CreateWindow("BUTTON", "Read Sector",
+                                   WS_VISIBLE | WS_CHILD,
+                                   280, 40, 100, 30, hwnd, (HMENU)ID_READ_SECTOR, NULL, NULL);
 
-    hButtonNext = CreateWindow("BUTTON", ">", WS_VISIBLE | WS_CHILD,
-                               410, 40, 30, 30, hwnd, (HMENU)ID_BUTTON_NEXT, NULL, NULL);
+            hButtonNext = CreateWindow("BUTTON", ">", WS_VISIBLE | WS_CHILD,
+                                       410, 40, 30, 30, hwnd, (HMENU)ID_BUTTON_NEXT, NULL, NULL);
 
-    hButtonPrev = CreateWindow("BUTTON", "<", WS_VISIBLE | WS_CHILD,
-                               380, 40, 30, 30, hwnd, (HMENU)ID_BUTTON_PREV, NULL, NULL);
+            hButtonPrev = CreateWindow("BUTTON", "<", WS_VISIBLE | WS_CHILD,
+                                       380, 40, 30, 30, hwnd, (HMENU)ID_BUTTON_PREV, NULL, NULL);
 
-    hList = CreateWindow(WC_LISTVIEW, "",
-                         WS_VISIBLE | WS_CHILD | LVS_REPORT,
-                         10, 80, 760, 500, hwnd, NULL, NULL, NULL);
+            hList = CreateWindow(WC_LISTVIEW, "",
+                                 WS_VISIBLE | WS_CHILD | LVS_REPORT,
+                                 10, 80, 760, 500, hwnd, NULL, NULL, NULL);
 
-    ListView_SetExtendedListViewStyle(hList, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+            ListView_SetExtendedListViewStyle(hList, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
-    // Configuração das colunas do ListView
-    LVCOLUMN lvCol;
-    lvCol.mask = LVCF_TEXT | LVCF_WIDTH;
+            // Configuração das colunas do ListView
+            LVCOLUMN lvCol;
+            lvCol.mask = LVCF_TEXT | LVCF_WIDTH;
 
-    lvCol.pszText = "Physical Address";
-    lvCol.cx = 150;
-    ListView_InsertColumn(hList, 0, &lvCol);
+            lvCol.pszText = "Physical Address";
+            lvCol.cx = 150;
+            ListView_InsertColumn(hList, 0, &lvCol);
 
-    lvCol.pszText = "Hexadecimal";
-    lvCol.cx = 250;
-    ListView_InsertColumn(hList, 1, &lvCol);
+            lvCol.pszText = "Hexadecimal";
+            lvCol.cx = 250;
+            ListView_InsertColumn(hList, 1, &lvCol);
 
-    lvCol.pszText = "Binary";
-    lvCol.cx = 200;
-    ListView_InsertColumn(hList, 2, &lvCol);
+            lvCol.pszText = "Binary";
+            lvCol.cx = 200;
+            ListView_InsertColumn(hList, 2, &lvCol);
 
-    lvCol.pszText = "ASCII";
-    lvCol.cx = 150;
-    ListView_InsertColumn(hList, 3, &lvCol);
+            lvCol.pszText = "ASCII";
+            lvCol.cx = 150;
+            ListView_InsertColumn(hList, 3, &lvCol);
 
-    // Configuração do tooltip
-    hTooltip = CreateWindowEx(0, TOOLTIPS_CLASS, NULL,
-                              WS_POPUP | TTS_ALWAYSTIP | TTS_NOPREFIX,
-                              CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-                              hwnd, NULL, NULL, NULL);
+            // Configuração do tooltip
+            hTooltip = CreateWindowEx(0, TOOLTIPS_CLASS, NULL,
+                                      WS_POPUP | TTS_ALWAYSTIP | TTS_NOPREFIX,
+                                      CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+                                      hwnd, NULL, NULL, NULL);
 
-    SetWindowPos(hTooltip, HWND_TOPMOST, 0, 0, 0, 0,
-                 SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+            SetWindowPos(hTooltip, HWND_TOPMOST, 0, 0, 0, 0,
+                         SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 
-    // Tooltip para o botão "Next"
-    TOOLINFO tiNext = {0};
-    tiNext.cbSize = sizeof(TOOLINFO);
-    tiNext.uFlags = TTF_SUBCLASS;
-    tiNext.hwnd = hButtonNext;
-    tiNext.hinst = NULL;
-    tiNext.uId = (UINT_PTR)hButtonNext;
-    tiNext.lpszText = "Go to the next sector";
-    GetClientRect(hButtonNext, &tiNext.rect);
-    SendMessage(hTooltip, TTM_ADDTOOL, 0, (LPARAM)&tiNext);
+            // Tooltip para o botão "Next"
+            TOOLINFO tiNext = {0};
+            tiNext.cbSize = sizeof(TOOLINFO);
+            tiNext.uFlags = TTF_SUBCLASS;
+            tiNext.hwnd = hButtonNext;
+            tiNext.hinst = NULL;
+            tiNext.uId = (UINT_PTR) hButtonNext;
+            tiNext.lpszText = "Go to the next sector";
+            GetClientRect(hButtonNext, &tiNext.rect);
+            SendMessage(hTooltip, TTM_ADDTOOL, 0, (LPARAM) &tiNext);
 
-    // Tooltip para o botão "Prev"
-    TOOLINFO tiPrev = {0};
-    tiPrev.cbSize = sizeof(TOOLINFO);
-    tiPrev.uFlags = TTF_SUBCLASS;
-    tiPrev.hwnd = hButtonPrev;
-    tiPrev.hinst = NULL;
-    tiPrev.uId = (UINT_PTR)hButtonPrev;
-    tiPrev.lpszText = "Go to the previous sector";
-    GetClientRect(hButtonPrev, &tiPrev.rect);
-    SendMessage(hTooltip, TTM_ADDTOOL, 0, (LPARAM)&tiPrev);
+            // Tooltip para o botão "Prev"
+            TOOLINFO tiPrev = {0};
+            tiPrev.cbSize = sizeof(TOOLINFO);
+            tiPrev.uFlags = TTF_SUBCLASS;
+            tiPrev.hwnd = hButtonPrev;
+            tiPrev.hinst = NULL;
+            tiPrev.uId = (UINT_PTR) hButtonPrev;
+            tiPrev.lpszText = "Go to the previous sector";
+            GetClientRect(hButtonPrev, &tiPrev.rect);
+            SendMessage(hTooltip, TTM_ADDTOOL, 0, (LPARAM) &tiPrev);
 
-    // Set initial sector to 0
-    SetWindowText(hSectorInput, "0");
+            // Setor inicial 0
+            SetWindowText(hSectorInput, "0");
 
-    // Read and display the initial sector (sector 0)
-    ListView_DeleteAllItems(hList);
-    ReadAndDisplaySector(hList, 0);
+            // Lê e mostra o setor inicial
+            ListView_DeleteAllItems(hList);
+            ReadAndDisplaySector(hList, 0);
 
-    break;
-}
+            break;
+        }
 
 
         case WM_SIZE: {
@@ -221,7 +221,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
 
 void ReadAndDisplaySector(HWND hList, LONGLONG sectorNumber) {
-    // Open volume C:
+    // Abre o disco C:
     HANDLE hDrive = CreateFile("\\\\.\\PhysicalDrive0",
                                GENERIC_READ,
                                FILE_SHARE_READ | FILE_SHARE_WRITE,
@@ -230,15 +230,18 @@ void ReadAndDisplaySector(HWND hList, LONGLONG sectorNumber) {
                                FILE_ATTRIBUTE_NORMAL,
                                NULL);
 
+    // Verifica se houve falha ao abrir o disco
     if (hDrive == INVALID_HANDLE_VALUE) {
         MessageBox(NULL, "Error opening drive C:", "Error", MB_OK | MB_ICONERROR);
         return;
     }
 
+    // Calcula o deslocamento para o setor desejado no disco
     LARGE_INTEGER distanceToMove;
     distanceToMove.QuadPart = sectorNumber * SECTOR_SIZE;
 
     LARGE_INTEGER newPosition;
+    // Move o ponteiro do arquivo/dispositivo para o início do setor desejado
     if (!SetFilePointerEx(hDrive, distanceToMove, &newPosition, FILE_BEGIN)) {
         MessageBox(NULL, "Error seeking to sector", "Error", MB_OK | MB_ICONERROR);
         CloseHandle(hDrive);
@@ -247,12 +250,14 @@ void ReadAndDisplaySector(HWND hList, LONGLONG sectorNumber) {
 
     BYTE buffer[SECTOR_SIZE];
     DWORD bytesRead;
+    // Lê o setor do disco e armazena os dados no buffer
     if (!ReadFile(hDrive, buffer, SECTOR_SIZE, &bytesRead, NULL)) {
         MessageBox(NULL, "Error reading sector", "Error", MB_OK | MB_ICONERROR);
         CloseHandle(hDrive);
         return;
     }
 
+    // Calcula o endereço físico do setor no disco para exibição
     LONGLONG physicalAddress = sectorNumber * SECTOR_SIZE;
     DisplaySectorData(hList, buffer, bytesRead, physicalAddress);
 
@@ -266,17 +271,17 @@ void DisplaySectorData(HWND hList, BYTE *buffer, DWORD bytesRead, LONGLONG physi
         char asciiStr[BYTES_PER_LINE + 1] = "";
         char physAddr[32];
 
-        // Format physical address
+        // Formata endereço físico
         snprintf(physAddr, sizeof(physAddr), "0x%08llX", physicalAddress + offset);
 
-        // Convert bytes to hex, binary, and ASCII
+        // Converte os bytes para hexa, bináio e ASCII
         for (DWORD i = 0; i < BYTES_PER_LINE && (offset + i) < bytesRead; i++) {
-            // Hex
+            // Hexa
             char byteHex[4];
             snprintf(byteHex, sizeof(byteHex), "%02X ", buffer[offset + i]);
             strcat(hexStr, byteHex);
 
-            // Binary
+            // Binário
             char byteBin[9] = "";
             for (int j = 7; j >= 0; j--) {
                 strcat(byteBin, (buffer[offset + i] & (1 << j)) ? "1" : "0");
@@ -291,7 +296,7 @@ void DisplaySectorData(HWND hList, BYTE *buffer, DWORD bytesRead, LONGLONG physi
             asciiStr[i + 1] = '\0';
         }
 
-        // Add to ListView
+        // Adiciona para o ListView
         LVITEM lvItem;
         lvItem.mask = LVIF_TEXT;
         lvItem.iItem = offset / BYTES_PER_LINE;
